@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using WebGenQRCode.Data;
 using WebGenQRCode.Data.Entities.Identity;
 using WebGenQRCode.Extensions;
+using WebGenQRCode.Interfaces;
+using WebGenQRCode.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,8 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(options =>
 })
     .AddEntityFrameworkStores<AppQrDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IImageService, ImageOptimizationService>();
 
 // Add services to the container.
 builder.Services.AddSwaggerGen(); //Додаємо swagger - кажемо, що він є
@@ -43,6 +48,23 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+try
+{
+    var myImage = builder.Configuration.GetRequiredSection("ImagesDir").Get<string>() ?? "myimages";
+    string path = Path.Combine(Directory.GetCurrentDirectory(), myImage);
+    Directory.CreateDirectory(path); //автоматично стоврить images
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(path),
+        RequestPath = $"/{myImage}"
+    });
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Помилка запуску" + ex.Message);
+}
 
 app.UseCors(reactCorsPolicy); //дозволяємо використання cors правил
 
