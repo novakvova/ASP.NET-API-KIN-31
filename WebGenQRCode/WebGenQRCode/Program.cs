@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using WebGenQRCode.Data;
 using WebGenQRCode.Data.Entities.Identity;
@@ -55,7 +56,34 @@ builder.Services.AddScoped<IImageService, ImageOptimizationService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 // Add services to the container.
-builder.Services.AddSwaggerGen(); //Додаємо swagger - кажемо, що він є
+//builder.Services.AddSwaggerGen(); //Додаємо swagger - кажемо, що він є
+builder.Services.AddSwaggerGen(opt =>
+{
+
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 builder.Services.AddControllers();
 
