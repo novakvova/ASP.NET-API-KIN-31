@@ -1,0 +1,73 @@
+Зробити метод контролера для оновлення інформації про
+QrCode, також додати метод для деактивації QrCode.
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using WebGenQRCode.Data;
+using WebGenQRCode.Data.Entities;
+using WebGenQRCode.Data.Entities.Identity;
+using WebGenQRCode.Models.QrCode;
+
+namespace WebGenQRCode.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+public class QrCodesController(AppQrDbContext appQrDbContext,
+    UserManager<UserEntity> userManager) : ControllerBase
+{
+    [HttpGet]
+    public async Task<IActionResult> GetQrCodes()
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email)
+            ?? User.FindFirstValue("email");
+        if (string.IsNullOrEmpty(email))
+            return Unauthorized();
+        var user = await userManager.FindByEmailAsync(email);
+        if(user == null)
+            return NotFound();
+        var qrCodes = appQrDbContext.QrCodes
+            .Where(q => q.UserId == user.Id)
+            .Select(q => new QrCodeItemModel
+            {
+                Id = q.Id,
+                Name = q.Name,
+                TargetUrl = q.TargetUrl,
+                Code = q.Code,
+                IsActive = q.IsActive,
+                CreateAt = q.CreateAt.ToString("dd.MM.yyyy HH:mm:ss"),
+                ScanCount = q.ScanCount
+            })
+            .ToList();
+        // Implementation for getting QR codes
+        return Ok(qrCodes);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateQrCode([FromBody] CreateQrCodeRequest request)
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email)
+            ?? User.FindFirstValue("email");
+        if(string.IsNullOrEmpty(email))
+        {
+            return Unauthorized(); //Шукаємо email користувача в claims, якщо його немає, повертаємо 401 Unauthorized
+        }
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        var entity = new QrCodeEntity
+        {
+            Name = request.Name,
+            TargetUrl = request.TargetUrl,
+            Code = Guid.NewGuid().ToString("N"), // Генеруємо унікальний код для QR-коду
+            UserId = user.Id
+        };
+        appQrDbContext.QrCodes.Add(entity);
+        await appQrDbContext.SaveChangesAsync();
+        // Implementation for creating QR code
+        return Ok();
+    }
+}
