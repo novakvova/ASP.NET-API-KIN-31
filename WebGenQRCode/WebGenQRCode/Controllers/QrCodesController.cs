@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using WebGenQRCode.Data;
 using WebGenQRCode.Data.Entities;
 using WebGenQRCode.Data.Entities.Identity;
@@ -23,7 +25,7 @@ public class QrCodesController(AppQrDbContext appQrDbContext,
         if (string.IsNullOrEmpty(email))
             return Unauthorized();
         var user = await userManager.FindByEmailAsync(email);
-        if(user == null)
+        if (user == null)
             return NotFound();
         var qrCodes = appQrDbContext.QrCodes
             .Where(q => q.UserId == user.Id)
@@ -47,7 +49,7 @@ public class QrCodesController(AppQrDbContext appQrDbContext,
     {
         var email = User.FindFirstValue(ClaimTypes.Email)
             ?? User.FindFirstValue("email");
-        if(string.IsNullOrEmpty(email))
+        if (string.IsNullOrEmpty(email))
         {
             return Unauthorized(); //Шукаємо email користувача в claims, якщо його немає, повертаємо 401 Unauthorized
         }
@@ -68,4 +70,41 @@ public class QrCodesController(AppQrDbContext appQrDbContext,
         // Implementation for creating QR code
         return Ok();
     }
+
+    [HttpGet("scan/{code}")]
+    public async Task<IActionResult> ScanQrCode(string code)
+    {
+        var qrCode = await appQrDbContext.QrCodes.FirstOrDefaultAsync(q => q.Code == code);
+        if (qrCode == null)
+            return NotFound("QR-код не знайдено");
+        if (!qrCode.IsActive)
+            return BadRequest("QR-код не активний");
+
+        qrCode.ScanCount++; // Збільшуємо лічильник сканувань
+        await appQrDbContext.SaveChangesAsync();
+
+        return Redirect(qrCode.TargetUrl); // Перенаправляємо користувача на цільовий URL
+    }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateQrCode(int id, [FromBody] UpdateQrCodeRequest request)
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email)
+            ?? User.FindFirstValue("email");
+        if (string.IsNullOrEmpty(email))
+            return Unauthorized();
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+            return NotFound();
+        var qrCode = await appQrDbContext.QrCodes
+            .FirstOrDefaultAsync(q => q.Id == id && q.UserId == user.Id);
+        if (qrCode == null)
+            return NotFound();
+        qrCode.Name = request.Name;
+        qrCode.TargetUrl = request.TargetUrl;
+        qrCode.IsActive = request.IsActive;
+        appQrDbContext.SaveChanges();
+        return Ok();
+    }
+
+
 }
