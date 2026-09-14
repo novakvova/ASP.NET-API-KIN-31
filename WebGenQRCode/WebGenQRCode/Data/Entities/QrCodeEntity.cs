@@ -27,6 +27,8 @@ public class QrCodeEntity
     public DateTime CreateAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 
+    public bool IsDeleted { get; set; } // для soft delete
+
     //Скільки разів було здійснено сканування коду
     public int ScanCount { get; set; }
 }
