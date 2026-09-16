@@ -1,2 +1,6 @@
 1.ASP.NET Core API підключення БД Identity
 2.Seed користувачів в БД. Розробка функціоналу по JWT Auth ASP.NET API.
+3.Робота з фото. Реєстрація користувачів на ASP.NET Core API
+4.Авторизація користувачів ASP.NET API видача Jwt Token 
+5.Аутентифікація користувача на сервері. ASP.NET Core API. Вхід черех Swagger Jwt Token
+6.

@@ -1,0 +1,38 @@
+version: "3.9"
+
+networks:
+  qrcode31knNet:
+    driver: bridge
+
+services:
+  postgresQrcode31knNetDb:
+    image: postgres:18.1
+    container_name: qrQrCode31postgres_db
+    restart: always
+    ports:
+      - "5112:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${VOLUME_POSTGRES}
+    networks:
+      - qrcode31knNet
+    
+  api:
+    #build: ./WebApiTransfer
+    image: novakvova/qrcode31kn-api:latest
+    container_name: qrcode31kn-api
+    volumes:
+      - ${VOLUME_SERVERAPI}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__QrConnection: Host=postgresQrcode31knNetDb;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      Cors__AllowedOrigins__0: ${CORS_ALLOWED_ORIGIN_0}
+    ports:
+      - "7054:8080"
+    depends_on:
+      - postgresQrcode31knNetDb
+    networks:
+      - qrcode31knNet
