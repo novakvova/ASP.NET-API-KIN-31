@@ -37,7 +37,9 @@ public class AccountController(IImageService imageService,
                 throw new Exception(errors);
             }
             await userManager.AddToRoleAsync(user, Roles.User);
-            return Ok();
+
+            var token = await jwtTokenService.CreateTokenAsync(user);
+            return Ok(new { Token = token });
         }
         catch (Exception ex)
         {
