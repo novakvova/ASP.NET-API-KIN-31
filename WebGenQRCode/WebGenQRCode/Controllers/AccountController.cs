@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WebGenQRCode.Constants;
 using WebGenQRCode.Data.Entities.Identity;
 using WebGenQRCode.Interfaces;
@@ -74,6 +76,31 @@ public class AccountController(IImageService imageService,
         {
             return BadRequest(new { Error = ex.Message });
         }
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email)
+            ?? User.FindFirstValue("email");
+        if(string.IsNullOrEmpty(email))
+            return Unauthorized("Email not found in token");
+
+        var user = await userManager.FindByEmailAsync(email);
+        if(user == null)
+            return NotFound("User not found");
+        var roles = await userManager.GetRolesAsync(user);
+        var model = new ProfileModel
+        {
+            Id = user.Id,
+            Email = user.Email ?? string.Empty,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty,
+            Image = user.Image ?? string.Empty,
+            Roles = roles
+        };
+        return Ok(model);
     }
 
 }
