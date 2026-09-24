@@ -54,6 +54,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IImageService, ImageOptimizationService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 // Add services to the container.
 //builder.Services.AddSwaggerGen(); //Додаємо swagger - кажемо, що він є

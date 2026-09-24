@@ -11,6 +11,7 @@ namespace WebGenQRCode.Controllers;
 [ApiController]
 public class AccountController(IImageService imageService,
     UserManager<UserEntity> userManager,
+    IAccountService accountService,
     IJwtTokenService jwtTokenService) : ControllerBase
 {
     [HttpPost]
@@ -60,5 +61,19 @@ public class AccountController(IImageService imageService,
 
         return Unauthorized("Не вірно вказано дані");
     }
-    
+
+    [HttpPost]
+    public async Task<IActionResult> LoginByGoogle([FromBody] GoogleLoginRequestModel model)
+    {
+        try
+        {
+            var token = await accountService.LoginByGoogle(model.Token);
+            return Ok(new { Token = token });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Error = ex.Message });
+        }
+    }
+
 }

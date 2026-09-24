@@ -20,5 +20,11 @@ public interface IImageService
     /// <param name="folderPath">Абсолютний шлях до папки, куди зберігати</param>
     /// <returns>Ім'я збереженого файлу (без шляху)</returns>
     Task<string> SaveOptimizedImageAsync(string base64Image);
+    /// <summary>
+    /// Вміє зкачувати фото по url
+    /// </summary>
+    /// <param name="imageUrl"></param>
+    /// <returns></returns>
+    Task<string> SaveImageFromUrlAsync(string imageUrl);
     Task RemoveImageAsync(string imageName);
 }

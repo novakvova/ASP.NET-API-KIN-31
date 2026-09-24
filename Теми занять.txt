@@ -7,3 +7,4 @@
 7.Розробка контролера REST API ASP.NET Core для QRCodes.
 8.Розгортання проекта ASP.NET Core API в мережі Amazon AWS.
 9.Тестування і відлагодження додатку ASP.NET Core API на AWS.
+10.Використання біблітеки Bogus. Генерація рандомних величин.
