@@ -188,7 +188,7 @@ public class ImageOptimizationService(IConfiguration configuration,
         using var httpClient = new HttpClient();
         var imageBytes = await httpClient.GetByteArrayAsync(imageUrl);
         var originalSizeKb = imageBytes.Length / 1024; // Розмір оригінального зображення в КБ
-        
+
         return await SaveOptimizedImageAsync(imageBytes, originalSizeKb);
     }
 }

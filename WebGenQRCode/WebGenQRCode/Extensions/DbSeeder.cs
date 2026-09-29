@@ -5,6 +5,7 @@ using WebGenQRCode.Constants;
 using WebGenQRCode.Data;
 using WebGenQRCode.Data.Entities.Identity;
 using WebGenQRCode.Models.Seeder;
+using WebGenQRCode.Interfaces;
 
 namespace WebGenQRCode.Extensions;
 
@@ -18,6 +19,7 @@ public static class DbSeeder
         var context = scope.ServiceProvider.GetRequiredService<AppQrDbContext>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<RoleEntity>>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
+        var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
 
         context.Database.Migrate();
 
@@ -38,6 +40,7 @@ public static class DbSeeder
                 var jsonData = await File.ReadAllTextAsync(jsonFile);
                 try
                 {
+                    int i = 1;
                     //Список користувачів, які ми отримали із файлу
                     var users = JsonSerializer.Deserialize<List<SeederUserModel>>(jsonData);
                     foreach(var user in users)
@@ -47,20 +50,27 @@ public static class DbSeeder
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             Email = user.Email,
-                            UserName = user.Email,
-                            Image = user.Image
+                            UserName = user.Email   
                         };
+
+                        if (!string.IsNullOrEmpty(user.Image))
+                        {
+                            user.Image = await imageService.SaveImageFromUrlAsync(user.Image);
+                        }
+
                         var result = await userManager.CreateAsync(entity, user.Password);
                         if(result.Succeeded)
                         {
                             foreach (var role in user.Roles)
                                 await userManager.AddToRoleAsync(entity, role);
                         }
+                        Console.WriteLine($"Додано {i} користувачів");
+                        i++;
                     }
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine("Виклик помилки при Seed Users", ex.Message);
+                    Console.WriteLine("Виклик помилки при Seed Users {0}", ex.Message);
                 }
             }
         }
