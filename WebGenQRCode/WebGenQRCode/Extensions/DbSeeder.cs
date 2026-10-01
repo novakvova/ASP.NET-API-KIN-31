@@ -55,7 +55,7 @@ public static class DbSeeder
 
                         if (!string.IsNullOrEmpty(user.Image))
                         {
-                            user.Image = await imageService.SaveImageFromUrlAsync(user.Image);
+                            entity.Image = await imageService.SaveImageFromUrlAsync(user.Image);
                         }
 
                         var result = await userManager.CreateAsync(entity, user.Password);
