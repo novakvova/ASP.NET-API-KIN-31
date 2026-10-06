@@ -4,11 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using System.Text;
 using WebGenQRCode.Data;
 using WebGenQRCode.Data.Entities.Identity;
 using WebGenQRCode.Extensions;
 using WebGenQRCode.Interfaces;
+using WebGenQRCode.Jobs;
 using WebGenQRCode.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,7 +53,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
+builder.Services.AddScoped<IDbSeeder, DbSeeder>();
 builder.Services.AddScoped<IImageService, ImageOptimizationService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -103,6 +105,20 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+//Налаштовуємо Quartz для запуску завдання DbSeedJob при старті програми
+builder.Services.AddQuartz(q => {
+    var jobKey = new JobKey(nameof(DbSeedJob));
+    q.AddJob<DbSeedJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity($"{nameof(DbSeedJob)}-trigger")
+        .StartNow());
+});
+builder.Services.AddQuartzHostedService(options =>
+{
+    options.WaitForJobsToComplete = true;
+});
 
 var app = builder.Build();
 
@@ -134,6 +150,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await app.SeedData();
+//Не потрібно, бо працює через Quartz
+//await app.SeedData();
 
 app.Run();
