@@ -12,11 +12,8 @@ namespace Domain.Entities;
 /// <summary>Додаткові характеристики (коробка передач, потужність, колісна база тощо) у вигляді ключ-значення.</summary>
 [Table("vehicle_specifications")]
 [Index(nameof(VehicleId))]
-public class VehicleSpecificationEntity
+public class VehicleSpecificationEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     [ForeignKey(nameof(Vehicle))]
     public int VehicleId { get; set; }
     public VehicleEntity Vehicle { get; set; } = null!;

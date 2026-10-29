@@ -8,11 +8,8 @@ namespace Domain.Entities;
 /// <summary>Фото авто (галерея на сторінці "Детальніше").</summary>
 [Table("vehicle_images")]
 [Index(nameof(VehicleId), nameof(SortOrder))]
-public class VehicleImageEntity
+public class VehicleImageEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     [ForeignKey(nameof(Vehicle))]
     public int VehicleId { get; set; }
     public VehicleEntity Vehicle { get; set; } = null!;

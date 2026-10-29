@@ -7,10 +7,8 @@ namespace Domain.Entities;
 /// <summary>Марка: Volkswagen, Mercedes-Benz, MAN...</summary>
 [Table("brands")]
 [Index(nameof(Name), IsUnique = true)]
-public class BrandEntity
+public class BrandEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
 
     [Required, MaxLength(100)]
     public string Name { get; set; } = null!;

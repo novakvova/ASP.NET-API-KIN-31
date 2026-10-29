@@ -9,11 +9,8 @@ namespace Domain.Entities;
 /// </summary>
 [Table("fuel_types")]
 [Index(nameof(Name), IsUnique = true)]
-public class FuelTypeEntity
+public class FuelTypeEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     [Required, MaxLength(50)]
     public string Name { get; set; } = null!;
     public ICollection<VehicleEntity> Vehicles { get; set; } = new List<VehicleEntity>();

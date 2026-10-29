@@ -8,11 +8,8 @@ namespace Domain.Entities;
 /// <summary>Статус авто: В наявності, Заброньовано, Продано.</summary>
 [Table("vehicle_statuses")]
 [Index(nameof(Name), IsUnique = true)]
-public class VehicleStatusEntity
+public class VehicleStatusEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     [Required, MaxLength(50)]
     public string Name { get; set; } = null!;
     public ICollection<VehicleEntity> Vehicles { get; set; } = new List<VehicleEntity>();

@@ -12,11 +12,8 @@ namespace Domain.Entities;
 /// <summary>Заявка / запит на дзвінок з сайту (кнопка "Зателефонувати").</summary>
 [Table("leads")]
 [Index(nameof(StatusId), nameof(CreatedAt))]
-public class LeadEntity
+public class LeadEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     /// <summary>Авто, за яким залишили заявку (може бути null для загальної).</summary>
     [ForeignKey(nameof(Vehicle))]
     public int? VehicleId { get; set; }

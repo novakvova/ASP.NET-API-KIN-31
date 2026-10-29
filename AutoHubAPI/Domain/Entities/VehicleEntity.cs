@@ -19,11 +19,8 @@ namespace Domain.Entities;
 [Index(nameof(Year))]
 [Index(nameof(FuelTypeId))]
 [Index(nameof(StatusId), nameof(CreatedAt))]
-public class VehicleEntity
+public class VehicleEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     [ForeignKey(nameof(Brand))]
     public int BrandId { get; set; }
     public BrandEntity Brand { get; set; } = null!;

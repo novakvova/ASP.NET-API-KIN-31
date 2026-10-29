@@ -1,15 +1,11 @@
 using Domain;
+using Infrastructure.ProgramConfiguration;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddControllers();
-
-builder.Services.AddSwaggerGen();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 

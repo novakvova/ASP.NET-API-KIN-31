@@ -7,11 +7,8 @@ namespace Domain.Entities;
 /// <summary>Статус заявки: Нова, В роботі, Виконана, Відхилена.</summary>
 [Table("lead_statuses")]
 [Index(nameof(Name), IsUnique = true)]
-public class LeadStatusEntity
+public class LeadStatusEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     [Required, MaxLength(50)]
     public string Name { get; set; } = null!;
 

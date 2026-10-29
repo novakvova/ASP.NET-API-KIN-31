@@ -12,11 +12,8 @@ namespace Domain.Entities;
 /// <summary>Тип кузова: Бортовий, Рефрижератор, Тент, Фургон, Дубль-кабіна борт, Самоскид, Евакуатор, Платформа.</summary>
 [Table("body_types")]
 [Index(nameof(Slug), IsUnique = true)]
-public class BodyTypeEntity
+public class BodyTypeEntity : BaseEntity<int>
 {
-    [Key]
-    public int Id { get; set; }
-
     [Required, MaxLength(100)]
     public string Name { get; set; } = null!;
 
