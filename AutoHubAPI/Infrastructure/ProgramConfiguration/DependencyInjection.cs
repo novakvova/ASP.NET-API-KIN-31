@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<ISeederService, SeederService>();
 
+        #region Тут налаштування Quartz
         // Quartz
         services.AddQuartz(q =>
         {
@@ -42,6 +43,8 @@ public static class DependencyInjection
                 .WithIdentity("DbSeedJob-trigger")
                 .StartNow());
         });
+        services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+        #endregion
 
         services.AddDbContext<AppDbContext>(opt =>
         opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
