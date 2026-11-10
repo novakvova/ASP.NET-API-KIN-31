@@ -31,6 +31,7 @@ public static class DependencyInjection
         // FluentValidation Global Configuration
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<ISeederService, SeederService>();
+        services.AddScoped<ITestService, TestService>();
 
         #region Тут налаштування Quartz
         // Quartz
