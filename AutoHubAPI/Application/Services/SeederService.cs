@@ -1,4 +1,6 @@
-﻿using Application.Interfaces;
+using Newtonsoft.Json;
+using Application.Interfaces;
+using Application.Models.Seed;
 using Domain;
 using Domain.Entities;
 using Domain.Entities.TestHub;
@@ -9,14 +11,6 @@ namespace Application.Services;
 public class SeederService(AppDbContext db)
     : ISeederService
 {
-    private const string CSharpTest = "Основи C#";
-    private const string EfTest = "Entity Framework Core";
-
-    private const string QIntType = "Який тип використовується для зберігання цілих чисел?";
-    private const string QAsync = "Яке ключове слово використовується для асинхронних методів?";
-    private const string QMigration = "Яка команда створює нову міграцію?";
-    private const string QRelations = "Які атрибути Data Annotations використовуються для зв'язків? (оберіть усі правильні)";
-
     public async Task SeedVehicleStatusesAsync()
     {
         if (await db.VehicleStatuses.AnyAsync())
@@ -333,72 +327,58 @@ public class SeederService(AppDbContext db)
     }
 
 
-    public async Task SeedTestsAsync()
+    /// <summary>
+    /// Сідинг TestHub з файлу SeedData/tests.json (копіюється в output при build/publish).
+    /// Ідемпотентний: тести шукаються за Title, питання — за Text у межах тесту; додаються лише відсутні.
+    /// </summary>
+    public async Task SeedTestHubAsync()
     {
-        if (await db.Tests.AnyAsync())
-            return;
+        if (db.Tests.Any())
+            return; //Немає потреби виконувати цей seed, якщо тести уже є
 
-        var tests = new List<TestEntity>
+        var path = Path.Combine(AppContext.BaseDirectory, "SeedData", "tests.json");
+        if (!File.Exists(path))
+            throw new FileNotFoundException("Файл сідингу тестів не знайдено", path);
+
+        var json = await File.ReadAllTextAsync(path);
+        // Newtonsoft за замовчуванням зіставляє властивості без урахування регістру (title → Title)
+        var seedTests = JsonConvert.DeserializeObject<List<TestSeedModel>>(json)
+                        ?? new List<TestSeedModel>();
+
+        foreach (var seed in seedTests)
         {
-            new() { Title = CSharpTest, Description = "Базові питання з мови C#", TimeLimitMinutes = 15 },
-            new() { Title = EfTest, Description = "Питання про роботу з EF Core", TimeLimitMinutes = 20 }
-        };
-        await db.Tests.AddRangeAsync(tests);
+            var test = await db.Tests
+                .Include(t => t.Questions)
+                .FirstOrDefaultAsync(t => t.Title == seed.Title);
+
+            if (test == null)
+            {
+                test = new TestEntity { Title = seed.Title, CreatedAt = DateTime.UtcNow };
+                db.Tests.Add(test);
+            }
+
+            test.Description = seed.Description;
+            test.TimeLimitMinutes = seed.TimeLimitMinutes;
+
+            var existing = test.Questions.Select(q => q.Text).ToHashSet();
+            for (var i = 0; i < seed.Questions.Count; i++)
+            {
+                var q = seed.Questions[i];
+                if (existing.Contains(q.Text))
+                    continue;
+
+                test.Questions.Add(new QuestionEntity
+                {
+                    Text = q.Text,
+                    OrderIndex = i + 1,
+                    Points = q.Points,
+                    AnswerOptions = q.Answers
+                        .Select(a => new AnswerOptionEntity { Text = a.Text, IsCorrect = a.IsCorrect })
+                        .ToList()
+                });
+            }
+        }
+
         await db.SaveChangesAsync();
     }
-
-    public async Task SeedQuestionsAsync()
-    {
-        if (await db.Questions.AnyAsync())
-            return;
-
-        var tests = await db.Tests.ToDictionaryAsync(t => t.Title, t => t.Id);
-        if (!tests.ContainsKey(CSharpTest) || !tests.ContainsKey(EfTest))
-            return;
-
-        var questions = new List<QuestionEntity>
-        {
-            new() { Text = QIntType, OrderIndex = 1, Points = 1, TestId = tests[CSharpTest] },
-            new() { Text = QAsync, OrderIndex = 2, Points = 1, TestId = tests[CSharpTest] },
-            new() { Text = QMigration, OrderIndex = 1, Points = 2, TestId = tests[EfTest] },
-            new() { Text = QRelations, OrderIndex = 2, Points = 3, TestId = tests[EfTest] }
-        };
-        await db.Questions.AddRangeAsync(questions);
-        await db.SaveChangesAsync();
-    }
-
-    public async Task SeedAnswerOptionsAsync()
-    {
-        if (await db.AnswerOptions.AnyAsync())
-            return;
-
-        var q = await db.Questions.ToDictionaryAsync(x => x.Text, x => x.Id);
-        if (new[] { QIntType, QAsync, QMigration, QRelations }.Any(t => !q.ContainsKey(t)))
-            return;
-
-        var options = new List<AnswerOptionEntity>
-        {
-            new() { Text = "int", IsCorrect = true, QuestionId = q[QIntType] },
-            new() { Text = "string", IsCorrect = false, QuestionId = q[QIntType] },
-            new() { Text = "bool", IsCorrect = false, QuestionId = q[QIntType] },
-            new() { Text = "double", IsCorrect = false, QuestionId = q[QIntType] },
-
-            new() { Text = "async", IsCorrect = true, QuestionId = q[QAsync] },
-            new() { Text = "await", IsCorrect = false, QuestionId = q[QAsync] },
-            new() { Text = "static", IsCorrect = false, QuestionId = q[QAsync] },
-            new() { Text = "yield", IsCorrect = false, QuestionId = q[QAsync] },
-
-            new() { Text = "dotnet ef migrations add", IsCorrect = true, QuestionId = q[QMigration] },
-            new() { Text = "dotnet ef database update", IsCorrect = false, QuestionId = q[QMigration] },
-            new() { Text = "dotnet ef dbcontext scaffold", IsCorrect = false, QuestionId = q[QMigration] },
-
-            new() { Text = "[ForeignKey]", IsCorrect = true, QuestionId = q[QRelations] },
-            new() { Text = "[Key]", IsCorrect = true, QuestionId = q[QRelations] },
-            new() { Text = "[Route]", IsCorrect = false, QuestionId = q[QRelations] },
-            new() { Text = "[HttpGet]", IsCorrect = false, QuestionId = q[QRelations] }
-        };
-        await db.AnswerOptions.AddRangeAsync(options);
-        await db.SaveChangesAsync();
-    }
-
 }

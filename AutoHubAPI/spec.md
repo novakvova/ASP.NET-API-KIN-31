@@ -4,7 +4,7 @@
 
 AutoHubAPI — REST API бекенд для майданчика продажу комерційного транспорту (вантажівки, фургони, рефрижератори, самоскиди тощо) з обробкою заявок (лідів) від клієнтів. Окремо в тій самій базі розміщено навчальний модуль **TestHub** — тести з питаннями та варіантами відповідей.
 
-Поточний стан: шар даних, міграції, сідинг і базова інфраструктура готові; бізнес-контролери ще не реалізовані (у проєкті є лише шаблонний `WeatherForecastController`).
+Поточний стан: шар даних, міграції, сідинг і базова інфраструктура готові. Для TestHub реалізовано `TestService` (CRUD тестів) і `TestsController` (поки лише `GET /api/tests`). Контролерів маркетплейсу ще немає (є шаблонний `WeatherForecastController`).
 
 ## 2. Технології
 
@@ -26,8 +26,9 @@ AutoHubAPI.slnx
 │   ├── Entities/          (маркетплейс)
 │   ├── Entities/TestHub/  (модуль тестування)
 │   └── Migrations/
-├── Application/       — інтерфейси, generic-репозиторій, специфікації, сервіси
+├── Application/       — інтерфейси, generic-репозиторій, специфікації, сервіси, DTO
 │   ├── Interfaces/
+│   ├── Models/            (DTO / Request, напр. Models/Tests)
 │   ├── Repositories/
 │   └── Services/
 ├── Infrastructure/    — реєстрація DI, конфігурація Quartz, фонові задачі
@@ -79,6 +80,8 @@ TestEntity (Tests) 1──N QuestionEntity (Questions) 1──N AnswerOptionEnti
 - `QuestionEntity`: Text, OrderIndex, Points (1–100), TestId.
 - `AnswerOptionEntity`: Text, IsCorrect, QuestionId (допускається кілька правильних відповідей).
 
+Доступ до даних TestHub — напряму через `AppDbContext` у `TestService` (не через `IGenericRepository`). Видалення тесту — **фізичне**, питання й відповіді видаляються каскадно.
+
 ### 5.3 Міграції
 
 Розташовані в `Domain/Migrations`:
@@ -102,8 +105,8 @@ TestEntity (Tests) 1──N QuestionEntity (Questions) 1──N AnswerOptionEnti
 
 6. **Автоматичні міграції та сідинг під час старту через Quartz**: `DbSeedJob` запускається одразу (`StartNow`) і викликає `ISeederService`:
    - `UpdateDatabase()` → `Database.MigrateAsync()`;
-   - `SeedTestsAsync` → `SeedQuestionsAsync` → `SeedAnswerOptionsAsync`.
-   Методи сідингу ідемпотентні (нічого не роблять, якщо таблиця вже має записи). Методи сідингу маркетплейсу (`SeedBrandsAsync`, `SeedVehiclesAsync` тощо, 17 авто + 9 заявок) реалізовані, але зараз у задачі не викликаються. Старий варіант сідингу в `Program.cs` закоментовано.
+   - `SeedTestHubAsync` — читає `AutoHubAPI/SeedData/tests.json` (тест «Основи C#» — 22 питання, «Entity Framework Core» — 25 питань) і додає відсутні тести (за `Title`) та питання з відповідями (за `Text`); оновлює Description/TimeLimitMinutes існуючих тестів. Файл копіюється в output при build і publish (`CopyToOutputDirectory`/`CopyToPublishDirectory` у `AutoHubAPI.csproj`).
+   Методи сідингу маркетплейсу ідемпотентні (нічого не роблять, якщо таблиця вже має записи). Методи сідингу маркетплейсу (`SeedBrandsAsync`, `SeedVehiclesAsync` тощо, 17 авто + 9 заявок) реалізовані, але зараз у задачі не викликаються. Старий варіант сідингу в `Program.cs` закоментовано.
 
 7. **CORS-політика `AllowAll`** — будь-яке джерело з `AllowCredentials`; призначено для розробки.
 
@@ -111,7 +114,19 @@ TestEntity (Tests) 1──N QuestionEntity (Questions) 1──N AnswerOptionEnti
 
 9. **Primary constructors (C# 12)** використовуються для впровадження залежностей у сервісах, репозиторіях і задачах.
 
-## 7. Конфігурація та запуск
+## 7. API
+
+| Метод | Маршрут | Опис | Відповідь |
+|---|---|---|---|
+| GET | `/api/tests` | Список усіх тестів | `TestItemDto[]` |
+
+Моделі (`Application/Models/Tests`):
+- `TestItemDto` (record): Id, Title, Description, TimeLimitMinutes, CreatedAt, QuestionsCount.
+- `TestSaveRequest`: Title (обов'язкове, ≤200), Description (≤1000), TimeLimitMinutes (1–600) — валідація через Data Annotations.
+
+`ITestService` уже містить `GetByIdAsync`, `CreateAsync`, `UpdateAsync`, `DeleteAsync`, але ендпоінтів для них ще немає.
+
+## 8. Конфігурація та запуск
 
 - Рядок підключення `ConnectionStrings:DefaultConnection` в `AutoHubAPI/appsettings.json` (віддалена БД Neon PostgreSQL).
 - Профіль запуску: `http://localhost:5230`, стартова сторінка `/swagger`.
@@ -122,12 +137,13 @@ dotnet run --project AutoHubAPI
 dotnet ef migrations add <Name> --project Domain --startup-project AutoHubAPI
 ```
 
-## 8. Відомі проблеми та технічний борг
+## 9. Відомі проблеми та технічний борг
 
 - Облікові дані БД збережені в `appsettings.json` під git — варто перенести в user-secrets / змінні середовища та змінити пароль.
 - Різні версії EF Core: 9.0.22 (Application) та 9.0.21 (Domain, AutoHubAPI).
 - `DbSeedJob` не сідить дані маркетплейсу.
-- Немає бізнес-контролерів, DTO, валідації (коментар «FluentValidation» у DI не має реалізації), автентифікації (`UseAuthorization` без схеми), обробки помилок.
+- Немає контролерів маркетплейсу; у `TestsController` реалізовано лише GET-список (GetById/Create/Update/Delete є в сервісі, але не в API).
+- Немає FluentValidation (коментар у DI без реалізації — використовуються лише Data Annotations), автентифікації (`UseAuthorization` без схеми), глобальної обробки помилок.
 - Немає тестового проєкту.
 - `BaseEntity.DateCreated` використовує `DateTime.Now` з позначкою UTC (локальний час, позначений як UTC); у `VehicleEntity`/`LeadEntity` додатково дублюється `CreatedAt`.
 - `GenericRepository.UpdateAsync`/`DeleteAsync` одразу викликають `SaveChangesAsync`, а `AddAsync` — ні (непослідовна семантика Unit of Work).

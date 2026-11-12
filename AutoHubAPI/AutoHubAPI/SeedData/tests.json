@@ -1,0 +1,485 @@
+[
+  {
+    "title": "Основи C#",
+    "description": "Базові питання з мови C#",
+    "timeLimitMinutes": 30,
+    "questions": [
+      {
+        "text": "Який тип використовується для зберігання цілих чисел?",
+        "points": 1,
+        "answers": [
+          { "text": "int", "isCorrect": true },
+          { "text": "double", "isCorrect": false },
+          { "text": "bool", "isCorrect": false },
+          { "text": "string", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яке ключове слово використовується для асинхронних методів?",
+        "points": 1,
+        "answers": [
+          { "text": "yield", "isCorrect": false },
+          { "text": "static", "isCorrect": false },
+          { "text": "async", "isCorrect": true },
+          { "text": "await", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яке ключове слово оголошує константу, значення якої відоме під час компіляції?",
+        "points": 1,
+        "answers": [
+          { "text": "readonly", "isCorrect": false },
+          { "text": "static", "isCorrect": false },
+          { "text": "const", "isCorrect": true },
+          { "text": "sealed", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Які з перелічених типів є типами-значеннями (value types)? (оберіть усі правильні)",
+        "points": 2,
+        "answers": [
+          { "text": "int", "isCorrect": true },
+          { "text": "DateTime", "isCorrect": true },
+          { "text": "string", "isCorrect": false },
+          { "text": "object", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який модифікатор доступу робить член доступним лише в межах поточної збірки?",
+        "points": 1,
+        "answers": [
+          { "text": "protected", "isCorrect": false },
+          { "text": "public", "isCorrect": false },
+          { "text": "private", "isCorrect": false },
+          { "text": "internal", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Яке ключове слово забороняє наслідування від класу?",
+        "points": 1,
+        "answers": [
+          { "text": "override", "isCorrect": false },
+          { "text": "sealed", "isCorrect": true },
+          { "text": "abstract", "isCorrect": false },
+          { "text": "virtual", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що повертає вираз a ?? b?",
+        "points": 1,
+        "answers": [
+          { "text": "Завжди кидає виняток, якщо a == null", "isCorrect": false },
+          { "text": "true, якщо обидва операнди не null", "isCorrect": false },
+          { "text": "a, якщо a не null, інакше b", "isCorrect": true },
+          { "text": "b, якщо b не null, інакше a", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який інтерфейс має реалізувати тип, щоб його можна було використати в операторі using?",
+        "points": 1,
+        "answers": [
+          { "text": "ICloneable", "isCorrect": false },
+          { "text": "IComparable", "isCorrect": false },
+          { "text": "IEnumerable", "isCorrect": false },
+          { "text": "IDisposable", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Яке ключове слово використовується для перевизначення віртуального методу базового класу?",
+        "points": 1,
+        "answers": [
+          { "text": "override", "isCorrect": true },
+          { "text": "virtual", "isCorrect": false },
+          { "text": "this", "isCorrect": false },
+          { "text": "base", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Які оголошення змінної рядка є коректними? (оберіть усі правильні)",
+        "points": 2,
+        "answers": [
+          { "text": "string s = \"a\";", "isCorrect": true },
+          { "text": "var s = \"a\";", "isCorrect": true },
+          { "text": "String s = \"a\";", "isCorrect": true },
+          { "text": "char s = \"a\";", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яка колекція зберігає пари «ключ–значення» з унікальними ключами?",
+        "points": 1,
+        "answers": [
+          { "text": "HashSet<T>", "isCorrect": false },
+          { "text": "Dictionary<TKey, TValue>", "isCorrect": true },
+          { "text": "List<T>", "isCorrect": false },
+          { "text": "Queue<T>", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який метод LINQ фільтрує елементи послідовності за умовою?",
+        "points": 1,
+        "answers": [
+          { "text": "GroupBy", "isCorrect": false },
+          { "text": "OrderBy", "isCorrect": false },
+          { "text": "Where", "isCorrect": true },
+          { "text": "Select", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що означає ключове слово var?",
+        "points": 1,
+        "answers": [
+          { "text": "Змінна є глобальною", "isCorrect": false },
+          { "text": "Змінна має динамічний тип під час виконання", "isCorrect": false },
+          { "text": "Змінна може приймати значення null", "isCorrect": false },
+          { "text": "Тип змінної визначає компілятор із виразу ініціалізації", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Який блок виконується завжди, незалежно від того, чи виник виняток?",
+        "points": 1,
+        "answers": [
+          { "text": "finally", "isCorrect": true },
+          { "text": "throw", "isCorrect": false },
+          { "text": "try", "isCorrect": false },
+          { "text": "catch", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що характерно для типу record?",
+        "points": 1,
+        "answers": [
+          { "text": "Порівняння на рівність за значеннями властивостей", "isCorrect": true },
+          { "text": "Порівняння на рівність лише за посиланням", "isCorrect": false },
+          { "text": "Автоматичне збереження в базу даних", "isCorrect": false },
+          { "text": "Неможливість мати методи", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який оператор перевіряє, чи сумісний об'єкт із типом, і повертає bool?",
+        "points": 1,
+        "answers": [
+          { "text": "as", "isCorrect": false },
+          { "text": "is", "isCorrect": true },
+          { "text": "sizeof", "isCorrect": false },
+          { "text": "typeof", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що станеться при цілочисельному діленні int на нуль?",
+        "points": 1,
+        "answers": [
+          { "text": "Результат дорівнює Infinity", "isCorrect": false },
+          { "text": "Результат дорівнює NaN", "isCorrect": false },
+          { "text": "Результат дорівнює 0", "isCorrect": false },
+          { "text": "Буде кинуто DivideByZeroException", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Який тип має повертати асинхронний метод, що не повертає значення (крім обробників подій)?",
+        "points": 1,
+        "answers": [
+          { "text": "Task", "isCorrect": true },
+          { "text": "void", "isCorrect": false },
+          { "text": "Task<void>", "isCorrect": false },
+          { "text": "object", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Як оголосити змінну типу int, що допускає null? (оберіть усі правильні)",
+        "points": 2,
+        "answers": [
+          { "text": "int? x;", "isCorrect": true },
+          { "text": "Nullable<int> x;", "isCorrect": true },
+          { "text": "int! x;", "isCorrect": false },
+          { "text": "null int x;", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що можна оголосити в інтерфейсі? (оберіть усі правильні)",
+        "points": 3,
+        "answers": [
+          { "text": "Методи", "isCorrect": true },
+          { "text": "Властивості", "isCorrect": true },
+          { "text": "Події", "isCorrect": true },
+          { "text": "Поля екземпляра", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яке ключове слово передає аргумент за посиланням і зобов'язує метод присвоїти йому значення?",
+        "points": 1,
+        "answers": [
+          { "text": "out", "isCorrect": true },
+          { "text": "ref", "isCorrect": false },
+          { "text": "in", "isCorrect": false },
+          { "text": "params", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що таке boxing?",
+        "points": 1,
+        "answers": [
+          { "text": "Явне приведення double до int", "isCorrect": false },
+          { "text": "Перетворення типу-значення на object (посилальний тип)", "isCorrect": true },
+          { "text": "Перетворення object назад на тип-значення", "isCorrect": false },
+          { "text": "Серіалізація об'єкта в JSON", "isCorrect": false }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Entity Framework Core",
+    "description": "Питання про роботу з EF Core",
+    "timeLimitMinutes": 35,
+    "questions": [
+      {
+        "text": "Яка команда створює нову міграцію?",
+        "points": 2,
+        "answers": [
+          { "text": "dotnet ef migrations add", "isCorrect": true },
+          { "text": "dotnet ef dbcontext scaffold", "isCorrect": false },
+          { "text": "dotnet ef database update", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Які атрибути Data Annotations використовуються для зв'язків? (оберіть усі правильні)",
+        "points": 3,
+        "answers": [
+          { "text": "[ForeignKey]", "isCorrect": true },
+          { "text": "[Key]", "isCorrect": true },
+          { "text": "[Route]", "isCorrect": false },
+          { "text": "[HttpGet]", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яка команда застосовує міграції до бази даних?",
+        "points": 1,
+        "answers": [
+          { "text": "dotnet ef database update", "isCorrect": true },
+          { "text": "dotnet ef migrations add", "isCorrect": false },
+          { "text": "dotnet ef migrations remove", "isCorrect": false },
+          { "text": "dotnet ef dbcontext info", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який клас є основною точкою роботи з базою даних в EF Core?",
+        "points": 1,
+        "answers": [
+          { "text": "DbContext", "isCorrect": true },
+          { "text": "ModelBuilder", "isCorrect": false },
+          { "text": "DbConnection", "isCorrect": false },
+          { "text": "DbSet", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що представляє DbSet<T>?",
+        "points": 1,
+        "answers": [
+          { "text": "Транзакцію", "isCorrect": false },
+          { "text": "Одну міграцію", "isCorrect": false },
+          { "text": "Набір сутностей певного типу (відповідає таблиці)", "isCorrect": true },
+          { "text": "Підключення до бази даних", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який метод асинхронно зберігає зміни в базі даних?",
+        "points": 1,
+        "answers": [
+          { "text": "SaveAsync", "isCorrect": false },
+          { "text": "CommitAsync", "isCorrect": false },
+          { "text": "UpdateDatabaseAsync", "isCorrect": false },
+          { "text": "SaveChangesAsync", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Який метод вимикає відстеження змін для запиту (лише читання)?",
+        "points": 1,
+        "answers": [
+          { "text": "AsNoTracking", "isCorrect": true },
+          { "text": "AsTracking", "isCorrect": false },
+          { "text": "Detach", "isCorrect": false },
+          { "text": "NoTrack", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який метод використовується для жадібного (eager) завантаження пов'язаних даних?",
+        "points": 1,
+        "answers": [
+          { "text": "Include", "isCorrect": true },
+          { "text": "Load", "isCorrect": false },
+          { "text": "Attach", "isCorrect": false },
+          { "text": "Join", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який метод завантажує вкладені навігаційні властивості після Include?",
+        "points": 1,
+        "answers": [
+          { "text": "IncludeNext", "isCorrect": false },
+          { "text": "ThenInclude", "isCorrect": true },
+          { "text": "SelectMany", "isCorrect": false },
+          { "text": "AndInclude", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який атрибут позначає первинний ключ?",
+        "points": 1,
+        "answers": [
+          { "text": "[Index]", "isCorrect": false },
+          { "text": "[Column]", "isCorrect": false },
+          { "text": "[Required]", "isCorrect": false },
+          { "text": "[Key]", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Де налаштовується модель через Fluent API?",
+        "points": 1,
+        "answers": [
+          { "text": "У методі OnModelCreating класу DbContext", "isCorrect": true },
+          { "text": "У файлі appsettings.json", "isCorrect": false },
+          { "text": "У конструкторі сутності", "isCorrect": false },
+          { "text": "У класі міграції", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яка команда видаляє останню ще не застосовану міграцію?",
+        "points": 1,
+        "answers": [
+          { "text": "dotnet ef database update 0", "isCorrect": false },
+          { "text": "dotnet ef migrations remove", "isCorrect": true },
+          { "text": "dotnet ef migrations delete", "isCorrect": false },
+          { "text": "dotnet ef database drop", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що робить Database.MigrateAsync()?",
+        "points": 1,
+        "answers": [
+          { "text": "Створює нову міграцію", "isCorrect": false },
+          { "text": "Відкочує останню міграцію", "isCorrect": false },
+          { "text": "Застосовує всі незастосовані міграції", "isCorrect": true },
+          { "text": "Видаляє базу даних", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Чим EnsureCreated() відрізняється від Migrate()?",
+        "points": 2,
+        "answers": [
+          { "text": "Нічим, це синоніми", "isCorrect": false },
+          { "text": "Застосовує міграції швидше", "isCorrect": false },
+          { "text": "Оновлює вже існуючу схему під нову модель", "isCorrect": false },
+          { "text": "Створює схему з моделі без використання міграцій", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Який стан має сутність після виклику Add(), але до SaveChanges()?",
+        "points": 1,
+        "answers": [
+          { "text": "Unchanged", "isCorrect": false },
+          { "text": "Detached", "isCorrect": false },
+          { "text": "Modified", "isCorrect": false },
+          { "text": "Added", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Які методи одразу виконують запит до бази даних? (оберіть усі правильні)",
+        "points": 2,
+        "answers": [
+          { "text": "ToListAsync", "isCorrect": true },
+          { "text": "FirstOrDefaultAsync", "isCorrect": true },
+          { "text": "CountAsync", "isCorrect": true },
+          { "text": "Where", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що таке lazy loading?",
+        "points": 1,
+        "answers": [
+          { "text": "Завантаження всіх таблиць під час старту застосунку", "isCorrect": false },
+          { "text": "Автоматичне завантаження навігаційних даних при першому зверненні до них", "isCorrect": true },
+          { "text": "Кешування запитів у пам'яті", "isCorrect": false },
+          { "text": "Завантаження пов'язаних даних через Include", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Який метод шукає сутність за первинним ключем, спершу перевіряючи сутності, що вже відстежуються контекстом?",
+        "points": 1,
+        "answers": [
+          { "text": "AnyAsync", "isCorrect": false },
+          { "text": "SingleAsync", "isCorrect": false },
+          { "text": "FindAsync", "isCorrect": true },
+          { "text": "FirstAsync", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яке значення DeleteBehavior видаляє залежні сутності разом із головною?",
+        "points": 1,
+        "answers": [
+          { "text": "NoAction", "isCorrect": false },
+          { "text": "SetNull", "isCorrect": false },
+          { "text": "Restrict", "isCorrect": false },
+          { "text": "Cascade", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Який атрибут задає ім'я таблиці для сутності?",
+        "points": 1,
+        "answers": [
+          { "text": "[Name]", "isCorrect": false },
+          { "text": "[Column]", "isCorrect": false },
+          { "text": "[Schema]", "isCorrect": false },
+          { "text": "[Table]", "isCorrect": true }
+        ]
+      },
+      {
+        "text": "Яку властивість EF Core за конвенцією вважає первинним ключем класу Product?",
+        "points": 1,
+        "answers": [
+          { "text": "Id або ProductId", "isCorrect": true },
+          { "text": "Першу властивість типу string", "isCorrect": false },
+          { "text": "Key", "isCorrect": false },
+          { "text": "Будь-яку властивість типу int", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Яка команда генерує сутності та DbContext з існуючої бази даних?",
+        "points": 1,
+        "answers": [
+          { "text": "dotnet ef model generate", "isCorrect": false },
+          { "text": "dotnet ef dbcontext scaffold", "isCorrect": true },
+          { "text": "dotnet ef migrations add", "isCorrect": false },
+          { "text": "dotnet ef database update", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Що відбувається з IQueryable до виклику методу на кшталт ToListAsync?",
+        "points": 2,
+        "answers": [
+          { "text": "Відкривається транзакція", "isCorrect": false },
+          { "text": "Запит виконується після кожного виклику Where", "isCorrect": false },
+          { "text": "Запит лише будується, SQL ще не виконується (відкладене виконання)", "isCorrect": true },
+          { "text": "Дані вже завантажені в пам'ять", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Які атрибути обмежують довжину рядка й впливають на тип колонки? (оберіть усі правильні)",
+        "points": 2,
+        "answers": [
+          { "text": "[MaxLength]", "isCorrect": true },
+          { "text": "[StringLength]", "isCorrect": true },
+          { "text": "[Range]", "isCorrect": false },
+          { "text": "[Required]", "isCorrect": false }
+        ]
+      },
+      {
+        "text": "Які засоби дозволяють виконати сирий SQL в EF Core? (оберіть усі правильні)",
+        "points": 3,
+        "answers": [
+          { "text": "DbSet.FromSql", "isCorrect": true },
+          { "text": "Database.ExecuteSqlAsync", "isCorrect": true },
+          { "text": "Database.SqlQuery<T>", "isCorrect": true },
+          { "text": "DbSet.RunSql", "isCorrect": false }
+        ]
+      }
+    ]
+  }
+]
