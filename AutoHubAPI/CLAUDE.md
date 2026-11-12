@@ -38,7 +38,7 @@ Four projects, layered by reference chain: `AutoHubAPI` → `Infrastructure` →
 - **Domain** — entities (`Domain/Entities`), `AppDbContext`, and EF migrations. Entity config is done with Data Annotations (`[Table]`, `[Index]`, `[ForeignKey]`, `[Column(TypeName=...)]`) rather than Fluent API; `AppDbContext` has no `OnModelCreating`.
 - **Application** — interfaces, `GenericRepository<TEntity,TKey>`, specifications, services (`SeederService`, `TestService`) and DTO/request models in `Application/Models/<Feature>` (e.g. `Models/Tests/TestItemDto`, `TestSaveRequest`). Note it depends directly on `AppDbContext` (no separate persistence layer).
 - **Infrastructure** — `ProgramConfiguration/DependencyInjection.cs` (`AddInfrastructureServices`) is the single place where all services are registered: CORS policy `"AllowAll"`, repositories/services, Quartz, DbContext, controllers, Swagger. Add new DI registrations here, not in `Program.cs`.
-- **AutoHubAPI** — thin host: `Program.cs` calls `AddInfrastructureServices` and wires middleware; controllers live here (`TestsController` — `GET /api/tests`; plus the template `WeatherForecastController`).
+- **AutoHubAPI** — thin host: `Program.cs` calls `AddInfrastructureServices` and wires middleware; controllers live here (`TestsController` — `GET /api/tests`, `GET /api/tests/{id}`, `GET /api/tests/{id}/pass`, `POST /api/tests/{id}/submit`; plus the template `WeatherForecastController`).
 
 ### Key patterns
 

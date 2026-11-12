@@ -70,4 +70,96 @@ public class TestService(AppDbContext db) : ITestService
         await db.SaveChangesAsync();
         return true;
     }
+
+    public async Task<TestInfoDto?> GetInfoAsync(int id)
+    {
+        return await db.Tests
+            .AsNoTracking()
+            .Where(t => t.Id == id)
+            .Select(t => new TestInfoDto(
+                t.Id, t.Title, t.Description, t.TimeLimitMinutes, t.CreatedAt,
+                t.Questions.Count,
+                t.Questions.Sum(q => q.Points)))
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<TestPassDto?> GetForPassingAsync(int id)
+    {
+        return await db.Tests
+            .AsNoTracking()
+            .Where(t => t.Id == id)
+            .Select(t => new TestPassDto(
+                t.Id, t.Title, t.TimeLimitMinutes,
+                t.Questions
+                    .OrderBy(q => q.OrderIndex).ThenBy(q => q.Id)
+                    .Select(q => new QuestionPassDto(
+                        q.Id, q.Text, q.OrderIndex, q.Points,
+                        q.AnswerOptions.Count(a => a.IsCorrect) > 1,
+                        q.AnswerOptions
+                            .OrderBy(a => a.Id)
+                            .Select(a => new AnswerOptionPassDto(a.Id, a.Text))
+                            .ToList()))
+                    .ToList()))
+            .FirstOrDefaultAsync();
+    }
+
+    /// <summary>
+    /// Питання зараховується повністю, лише якщо обрано рівно всі правильні варіанти
+    /// (без зайвих). Часткових балів немає. Варіанти, що не належать питанню, ігноруються.
+    /// </summary>
+    public async Task<TestResultDto?> SubmitAsync(int id, TestSubmitRequest request)
+    {
+        var test = await db.Tests
+            .AsNoTracking()
+            .Where(t => t.Id == id)
+            .Select(t => new
+            {
+                t.Id,
+                t.Title,
+                Questions = t.Questions
+                    .OrderBy(q => q.OrderIndex).ThenBy(q => q.Id)
+                    .Select(q => new
+                    {
+                        q.Id,
+                        q.Text,
+                        q.Points,
+                        OptionIds = q.AnswerOptions.Select(a => a.Id).ToList(),
+                        CorrectIds = q.AnswerOptions.Where(a => a.IsCorrect).Select(a => a.Id).ToList()
+                    })
+                    .ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        if (test == null)
+            return null;
+
+        // Якщо одне питання надіслано кілька разів — об'єднуємо вибрані варіанти
+        var selectedByQuestion = request.Answers
+            .GroupBy(a => a.QuestionId)
+            .ToDictionary(g => g.Key, g => g.SelectMany(a => a.SelectedOptionIds).ToHashSet());
+
+        var results = test.Questions.Select(q =>
+        {
+            var selected = selectedByQuestion.TryGetValue(q.Id, out var ids)
+                ? ids.Where(q.OptionIds.Contains).OrderBy(x => x).ToList()
+                : new List<int>();
+
+            var isCorrect = q.CorrectIds.Count > 0 && selected.ToHashSet().SetEquals(q.CorrectIds);
+
+            return new QuestionResultDto(
+                q.Id, q.Text, q.Points,
+                isCorrect ? q.Points : 0,
+                isCorrect,
+                selected,
+                q.CorrectIds.OrderBy(x => x).ToList());
+        }).ToList();
+
+        var score = results.Sum(r => r.EarnedPoints);
+        var maxScore = results.Sum(r => r.Points);
+        var percent = maxScore == 0 ? 0 : Math.Round(score * 100.0 / maxScore, 1);
+
+        return new TestResultDto(
+            test.Id, test.Title, score, maxScore, percent,
+            results.Count(r => r.IsCorrect), results.Count, results);
+    }
 }
