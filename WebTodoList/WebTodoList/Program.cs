@@ -1,4 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using WebTodoList.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+string strConn = builder.Configuration.GetConnectionString("MyConnectionTodoList");
+builder.Services.AddDbContext<AppTodoDbContext>(opt =>
+    opt.UseNpgsql(strConn));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
